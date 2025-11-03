@@ -36,7 +36,7 @@ export const registerSchema = Joi.object({
         }),
 
     user_type: Joi.string()
-        .valid('client', 'consultant')
+        .valid('client', 'consultant', 'admin')
         .required()
         .messages({
             'any.only': 'User type must be either "client" (hire consultants) or "consultant" (offer services)',
@@ -81,7 +81,7 @@ export const googleRegisterSchema = Joi.object({
         }),
 
     user_type: Joi.string()
-        .valid('client', 'consultant')
+        .valid('client', 'consultant', 'admin')
         .required()
         .messages({
             'any.only': 'User type must be either "client" (hire consultants) or "consultant" (offer services)',

@@ -11,7 +11,7 @@ export const register = async (req, res) => {
 
     const { name, email, password, user_type } = req.body;
 
-    if (!user_type || !["client", "consultant"].includes(user_type)) {
+    if (!user_type || !["client", "consultant", "admin"].includes(user_type)) {
         throw new ApiError(400, "Invalid user type. Must be either 'client' or 'consultant'. Available options: client (hire consultants), consultant (offer services)");
     }
 

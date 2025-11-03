@@ -7,8 +7,10 @@ import * as blogController from "../controllers/blog.controller.js";
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-// Admin-only
+// Admin-only routes
 router.post("/", auth, isAdmin, upload.single("image"), validateBody(createBlogSchema), blogController.createBlog);
+router.put("/:id", auth, isAdmin, upload.single("image"), validateBody(createBlogSchema), blogController.updateBlog);
+router.delete("/:id", auth, isAdmin, blogController.deleteBlog);
 
 // Public routes
 router.get("/", blogController.getAllBlogs);

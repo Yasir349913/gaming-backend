@@ -5,10 +5,12 @@ import * as faqController from "../controllers/faq.controller.js";
 
 const router = express.Router();
 
-// Admin-only
+// Admin-only routes
 router.post("/", auth, isAdmin, validateBody(createFaqSchema), faqController.createFaq);
+router.put("/:id", auth, isAdmin, validateBody(createFaqSchema), faqController.updateFaq);
+router.delete("/:id", auth, isAdmin, faqController.deleteFaq);
 
-// Public
+// Public routes
 router.get("/", faqController.getAllFaqs);
 
 export default router;

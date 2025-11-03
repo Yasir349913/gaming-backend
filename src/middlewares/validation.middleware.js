@@ -12,6 +12,18 @@ export const validate = (schema, source = 'body') => {
             // Get the data to validate
             let dataToValidate = req[source];
 
+            // Parse FormData fields for body validation
+            if (source === 'body') {
+                if (dataToValidate.tags && typeof dataToValidate.tags === 'string') {
+                    dataToValidate.tags = dataToValidate.tags.startsWith('[')
+                        ? JSON.parse(dataToValidate.tags)
+                        : dataToValidate.tags.split(',').map(t => t.trim()).filter(Boolean);
+                }
+                if (typeof dataToValidate.isPublished === 'string') {
+                    dataToValidate.isPublished = dataToValidate.isPublished === 'true';
+                }
+            }
+
             const { error, value } = schema.validate(dataToValidate, {
                 abortEarly: false,
                 allowUnknown: true,
