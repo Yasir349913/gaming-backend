@@ -1,6 +1,6 @@
-import OnboardingService from "../services/onboarding.service.js";
 import { ApiResponse, ApiError } from "../utils/index.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import OnboardingService from "../services/onboarding.service.js";
 
 
 export const completeClientProfile = async (req, res, next) => {

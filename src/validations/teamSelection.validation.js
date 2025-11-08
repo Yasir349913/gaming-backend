@@ -71,13 +71,6 @@ export const listTeamsQuerySchema = Joi.object({
             'number.base': 'Limit must be a number',
             'number.min': 'Limit must be at least 1',
             'number.max': 'Limit cannot exceed 100'
-        }),
-
-    status: Joi.string()
-        .valid('draft', 'submitted', 'approved', 'active', 'completed', 'cancelled')
-        .optional()
-        .messages({
-            'any.only': 'Status must be one of: draft, submitted, approved, active, completed, cancelled'
         })
 });
 
@@ -174,13 +167,6 @@ export const updateTeamSchema = Joi.object({
         .optional()
         .messages({
             'any.only': 'Billing period must be either "hourly", "daily", or "weekly"'
-        }),
-
-    status: Joi.string()
-        .valid('draft', 'submitted', 'approved', 'active', 'completed', 'cancelled')
-        .optional()
-        .messages({
-            'any.only': 'Status must be one of: draft, submitted, approved, active, completed, cancelled'
         }),
 
     projectDuration: Joi.object({

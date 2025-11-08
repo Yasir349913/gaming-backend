@@ -8,10 +8,12 @@ import * as authValidation from "./auth.validation.js";
 import * as userValidation from "./user.validation.js";
 import * as onboardingValidation from "./onboarding.validation.js";
 import * as teamSelectionValidation from "./teamSelection.validation.js";
+import * as forumValidation from "./forum.validation.js";
 
 export default {
     auth: authValidation,
     user: userValidation,
     onboarding: onboardingValidation,
-    teamSelection: teamSelectionValidation
+    teamSelection: teamSelectionValidation,
+    forum: forumValidation
 };

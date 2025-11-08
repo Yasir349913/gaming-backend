@@ -101,11 +101,6 @@ const teamSelectionSchema = new Schema(
             endDate: { type: Date },
             estimatedHours: { type: Number, min: 0 },
         },
-        status: {
-            type: String,
-            enum: ["draft", "submitted", "approved", "active", "completed", "cancelled"],
-            default: "draft",
-        },
         requirements: {
             skills: [{ type: String, trim: true }],
             minExperience: { type: Number, min: 0 },
@@ -134,9 +129,9 @@ const teamSelectionSchema = new Schema(
 );
 
 // Indexes
-teamSelectionSchema.index({ client: 1, status: 1 });
+teamSelectionSchema.index({ client: 1 });
 teamSelectionSchema.index({ "members.consultant": 1 });
-teamSelectionSchema.index({ status: 1, createdAt: -1 });
+teamSelectionSchema.index({ createdAt: -1 });
 teamSelectionSchema.index({ shareLinkId: 1 }, { sparse: true });
 
 // Virtuals

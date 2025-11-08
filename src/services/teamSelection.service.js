@@ -75,6 +75,14 @@ const calculatePricingForTeam = async (teamDoc, { taxPercent = 0, discountPercen
 
     const period = teamDoc.billingPeriod || "hourly";
 
+    // Calculate project duration in days and weeks
+    const projectDays = teamDoc.projectDuration?.startDate && teamDoc.projectDuration?.endDate
+        ? daysBetweenInclusive(teamDoc.projectDuration.startDate, teamDoc.projectDuration.endDate)
+        : (teamDoc.projectDuration?.estimatedHours ? Math.ceil(teamDoc.projectDuration.estimatedHours / 8) : 1);
+    const projectWeeks = teamDoc.projectDuration?.startDate && teamDoc.projectDuration?.endDate
+        ? weeksBetweenCeil(teamDoc.projectDuration.startDate, teamDoc.projectDuration.endDate)
+        : Math.ceil(projectDays / 7);
+
     let units = 1;
     if (period === "hourly") {
         units =
@@ -83,13 +91,9 @@ const calculatePricingForTeam = async (teamDoc, { taxPercent = 0, discountPercen
                 ? daysBetweenInclusive(teamDoc.projectDuration.startDate, teamDoc.projectDuration.endDate) * 8
                 : 1);
     } else if (period === "daily") {
-        units = teamDoc.projectDuration?.startDate && teamDoc.projectDuration?.endDate
-            ? daysBetweenInclusive(teamDoc.projectDuration.startDate, teamDoc.projectDuration.endDate)
-            : 1;
+        units = projectDays;
     } else if (period === "weekly") {
-        units = teamDoc.projectDuration?.startDate && teamDoc.projectDuration?.endDate
-            ? weeksBetweenCeil(teamDoc.projectDuration.startDate, teamDoc.projectDuration.endDate)
-            : 1;
+        units = projectWeeks;
     }
 
     let subtotal = 0;
@@ -105,10 +109,33 @@ const calculatePricingForTeam = async (teamDoc, { taxPercent = 0, discountPercen
         if (!cid) continue; // Skip if no valid consultant ID
 
         const consultantData = consMap.get(String(cid)) || null;
-        const rawRate = getRateForPeriod(m, consultantData, period);
         const allocationFactor = (typeof m.allocation === "number" ? m.allocation : 100) / 100;
-        const memberUnits = units * allocationFactor;
-        const memberCost = rawRate * memberUnits;
+        
+        let memberCost = 0;
+        
+        if (period === "hourly") {
+            // For hourly billing: if duration is a week, use hoursPerDay × 7 × hourly rate
+            // Otherwise use the standard calculation
+            if (projectDays === 7 || projectWeeks === 1) {
+                const hoursPerDay = consultantData?.availability?.hoursPerDay || 8;
+                const hourlyRate = Number(consultantData?.baseRate?.hourly || 0);
+                memberCost = hoursPerDay * 7 * hourlyRate * allocationFactor;
+            } else {
+                const rawRate = getRateForPeriod(m, consultantData, period);
+                const memberUnits = units * allocationFactor;
+                memberCost = rawRate * memberUnits;
+            }
+        } else if (period === "weekly") {
+            // For weekly billing: weekly rate × number of weeks
+            const weeklyRate = getRateForPeriod(m, consultantData, period);
+            memberCost = weeklyRate * units * allocationFactor;
+        } else {
+            // Daily or other periods use standard calculation
+            const rawRate = getRateForPeriod(m, consultantData, period);
+            const memberUnits = units * allocationFactor;
+            memberCost = rawRate * memberUnits;
+        }
+        
         subtotal += Number(memberCost || 0);
         if (!teamDoc.totalBudget?.currency && consultantData?.baseRate?.currency) {
             currency = consultantData.baseRate.currency;
@@ -187,9 +214,8 @@ const getTeam = async (teamId, userId) => {
     return team;
 };
 
-const listClientTeams = async (userId, { status, page = 1, limit = 25 } = {}) => {
+const listClientTeams = async (userId, { page = 1, limit = 25 } = {}) => {
     const q = { client: new mongoose.Types.ObjectId(userId) };
-    if (status) q.status = status;
     const skip = (Math.max(1, page) - 1) * limit;
     const teams = await TeamSelection.find(q).sort({ updatedAt: -1 }).skip(skip).limit(limit);
     const total = await TeamSelection.countDocuments(q);
@@ -201,7 +227,7 @@ const updateTeam = async (teamId, userId, payload) => {
     if (!team) throw new ApiError(404, "Team not found");
     if (team.client.toString() !== userId.toString()) throw new ApiError(403, "Access denied");
 
-    const allowed = ["name", "description", "requirements", "status", "projectDuration", "billingPeriod"];
+    const allowed = ["name", "description", "requirements", "projectDuration", "billingPeriod"];
     for (const k of allowed) {
         if (payload[k] !== undefined) team[k] = payload[k];
     }

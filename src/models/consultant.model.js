@@ -15,6 +15,7 @@ const availabilitySchema = new Schema(
     {
         timezone: { type: String, default: "UTC" },
         hoursPerWeek: { type: Number, default: 40 },
+        hoursPerDay: { type: Number, default: 8, min: 1, max: 24 },
         availableFrom: { type: Date },
         availableTo: { type: Date },
         remote: { type: Boolean, default: true },

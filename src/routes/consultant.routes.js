@@ -1,27 +1,34 @@
 // routes/client.routes.js
 import express from "express";
 import { consultantController } from "../controllers/index.js";
-import { auth, isAdmin } from "../middlewares/index.js";
+import { auth, isAdmin, validateParams } from "../middlewares/index.js";
+import { teamIdParamSchema } from "../validations/teamSelection.validation.js";
 
 const router = express.Router();
 
-// Already existing routes
 router.use(auth);
 
-// --- Consultant browsing routes ---
-router.get("/consultants", consultantController.getAllConsultants);
-router.get("/consultants/search", consultantController.searchConsultants);
-router.get("/consultants/featured", consultantController.getFeaturedConsultants);
-router.get("/consultants/skills", consultantController.getConsultantsBySkills);
-router.get("/consultants/experience", consultantController.getConsultantsByExperience);
-router.get("/consultants/:consultantId", consultantController.getConsultantDetails);
+// --- IMPORTANT: Specific routes MUST come BEFORE /:consultantId ---
 
-// --- Admin management routes ---
-router.get("/admin/consultants", isAdmin, consultantController.adminGetAllConsultants);
-router.put("/admin/consultants/approve/:consultantId", isAdmin, consultantController.adminApproveConsultant);
-router.put("/admin/consultants/disapprove/:consultantId", isAdmin, consultantController.adminDisapproveConsultant);
+// Consultant browsing routes (specific paths)
+router.get("/", consultantController.getAllConsultants);
+router.get("/search", consultantController.searchConsultants);
+router.get("/featured", consultantController.getFeaturedConsultants);
+router.get("/skills", consultantController.getConsultantsBySkills);
+router.get("/experience", consultantController.getConsultantsByExperience);
 
-// --- Consultant check their approval status ---
-router.get("/consultants/status/me", consultantController.getConsultantApprovalStatus);
+// Consultant-specific routes (MOVED BEFORE /:consultantId)
+router.get("/status/me", consultantController.getConsultantApprovalStatus);
+router.get("/assignments/me", consultantController.getMyTeamAssignments);
+router.get("/teams/:teamId", validateParams(teamIdParamSchema), consultantController.getTeamById);
+
+// Admin management routes (MOVED BEFORE /:consultantId)
+router.get("/admin", isAdmin, consultantController.adminGetAllConsultants);
+router.put("/admin/approve/:consultantId", isAdmin, consultantController.adminApproveConsultant);
+router.put("/admin/disapprove/:consultantId", isAdmin, consultantController.adminDisapproveConsultant);
+router.put("/admin/level/:consultantId", isAdmin, consultantController.adminUpdateLevel);
+
+// ⚠️ Parameterized route MUST be LAST
+router.get("/:consultantId", consultantController.getConsultantDetails);
 
 export default router;

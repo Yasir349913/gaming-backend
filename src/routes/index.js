@@ -6,6 +6,7 @@ import teamSelectionRoutes from "./teamSelection.routes.js";
 import consultantRoutes from "./consultant.routes.js";
 import faqRoutes from "./faq.routes.js";
 import blogRoutes from "./blog.routes.js";
+import forumRoutes from "./forum.routes.js";
 import { env } from "../config/index.js";
 
 const router = express.Router();
@@ -15,9 +16,10 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/onboarding", onboardingRoutes);
 router.use("/teams", teamSelectionRoutes);
-router.use("/consultant", consultantRoutes);
+router.use("/consultants", consultantRoutes);
 router.use("/faq", faqRoutes);
 router.use("/blog", blogRoutes);
+router.use("/forum", forumRoutes);
 
 
 // Health check route

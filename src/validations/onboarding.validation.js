@@ -66,7 +66,6 @@ export const clientProfileSchema = Joi.object({
         })
 });
 
-// Consultant profile onboarding validation
 export const consultantProfileSchema = Joi.object({
     headline: Joi.string()
         .trim()
@@ -100,17 +99,8 @@ export const consultantProfileSchema = Joi.object({
             'array.max': 'Cannot have more than 20 skills'
         }),
 
-    badges: Joi.array()
-        .items(Joi.string().trim())
-        .optional(),
+    // REMOVED badges from here - only admin can assign
 
-    level: Joi.string()
-        .valid('LV1', 'LV2', 'LV3', 'LV4', 'LV5', 'LV6')
-        .default('LV1')
-        .optional()
-        .messages({
-            'any.only': 'Level must be one of: LV1, LV2, LV3, LV4, LV5, LV6'
-        }),
 
     baseRate: Joi.object({
         currency: Joi.string().valid('USD', 'EUR', 'GBP', 'CAD', 'AUD').default('USD'),
@@ -132,6 +122,7 @@ export const consultantProfileSchema = Joi.object({
     availability: Joi.object({
         timezone: Joi.string().default('UTC'),
         hoursPerWeek: Joi.number().min(1).max(168).default(40),
+        hoursPerDay: Joi.number().min(1).max(24).default(8),
         availableFrom: Joi.date().optional(),
         availableTo: Joi.date().optional(),
         remote: Joi.boolean().default(true)
@@ -144,7 +135,6 @@ export const consultantProfileSchema = Joi.object({
         .messages({
             'array.max': 'Cannot have more than 10 locations'
         }),
-
 
     portfolioLinks: Joi.array()
         .items(Joi.string().uri())
@@ -166,5 +156,29 @@ export const consultantProfileSchema = Joi.object({
         .optional()
         .messages({
             'any.only': 'Visibility must be one of: public, private, unlisted'
+        })
+});
+
+// Add new validation schema for admin badge assignment
+export const adminLevelSchema = Joi.object({
+    level: Joi.string()
+        .valid('LV1', 'LV2', 'LV3', 'LV4', 'LV5', 'LV6')
+        .required()
+        .messages({
+            'any.only': 'Level must be one of: LV1, LV2, LV3, LV4, LV5, LV6',
+            'any.required': 'Level is required'
+        })
+});
+
+// Validation schema for updating availability hours per day
+export const updateAvailabilityHoursSchema = Joi.object({
+    hoursPerDay: Joi.number()
+        .min(1)
+        .max(24)
+        .required()
+        .messages({
+            'number.min': 'Hours per day must be at least 1',
+            'number.max': 'Hours per day cannot exceed 24',
+            'any.required': 'hoursPerDay is required'
         })
 });

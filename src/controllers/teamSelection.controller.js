@@ -36,12 +36,11 @@ export const getTeam = async (req, res, next) => {
 export const listClientTeams = async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const { page = 1, limit = 10, status } = req.query;
+        const { page = 1, limit = 10 } = req.query;
 
         const result = await TeamSelectionService.listClientTeams(userId, {
             page: Number(page),
-            limit: Number(limit),
-            status
+            limit: Number(limit)
         });
 
         res.status(200).json(new ApiResponse(200, result, "Teams retrieved successfully"));

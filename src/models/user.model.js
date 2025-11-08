@@ -65,6 +65,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        karma: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
     },
     { timestamps: true }
 );
