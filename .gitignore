@@ -96,3 +96,6 @@ ecosystem.config.js
 Dockerfile
 docker-compose.yml
 .dockerignore
+
+# Vercel
+.vercel
