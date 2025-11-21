@@ -3,7 +3,7 @@ import express from "express";
 import { auth, isAdmin, validateBody } from "../middlewares/index.js";
 import { createBlogSchema } from "../validations/blog.validation.js";
 import * as blogController from "../controllers/blog.controller.js";
-import { upload } from "../multer.config.js"; // use memoryStorage export
+import { upload } from "../config/multer.config.js"; // use memoryStorage export
 
 const router = express.Router();
 
