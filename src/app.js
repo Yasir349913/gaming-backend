@@ -19,7 +19,7 @@ const envOrigins = (env.CORS_ORIGINS || env.CLIENT_URL || env.ADMIN_URL || "")
     .filter(Boolean);
 
 // Default development origins
-const defaultOrigins = ["http://localhost:3000", "http://localhost:3001", "https://innovativegaming.vercel.app/","https://gaming-frontend-lemon.vercel.app/"];
+const defaultOrigins = ["http://localhost:3000", "http://localhost:3001", "https://innovativegaming.vercel.app/","https://gaming-frontend-lemon.vercel.app/","https://gaming-frontend-lemon.vercel.app"];
 
 // Combine and deduplicate
 const allowedOrigins = [...new Set([...envOrigins, ...defaultOrigins])];
