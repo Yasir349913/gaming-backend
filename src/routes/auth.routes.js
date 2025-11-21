@@ -16,7 +16,6 @@ router.post("/logout", authController.logout);
 // Google auth
 router.post("/register/google", validateBody(googleRegisterSchema), authController.googleRegister);
 router.post("/login/google", validateBody(googleLoginSchema), authController.googleLogin);
-
 // Auth check endpoint
 router.get("/check", auth, authController.checkAuth);
 
